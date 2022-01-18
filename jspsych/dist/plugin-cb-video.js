@@ -192,9 +192,9 @@ var jsPsychVideoKeyboardResponse = (function (jspsych) {
             timeoutID = 'null';
           }
           function show_flicker(mask){
-            mask.style.visibility='visible';
+            mask.style.opacity=.75;
             var flicker_duration = trial.flicker_duration;
-            flickerTimeOut = setTimeout(()=>{mask.style.visibility='hidden';},flicker_duration);
+            flickerTimeOut = setTimeout(()=>{mask.style.opacity=0;},flicker_duration);
           }
           var counter = 0;
           var magnitude_jump = [0, 500, 1000];
@@ -240,7 +240,7 @@ var jsPsychVideoKeyboardResponse = (function (jspsych) {
             timeoutID = setTimeout(()=>{flicker(mask); show_flicker(mask)},flicker_frequency);
           }
           var mask = document.querySelector('#mask');
-          mask.style.visibility = 'hidden';
+          mask.style.opacity = 0;
 
           var video_0 = document.querySelector('#video_0');
           var video_1 = document.querySelector('#video_1');
