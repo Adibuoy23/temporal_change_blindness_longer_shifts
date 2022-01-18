@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="./jspsych/dist/jspsych.js"></script>
+  <script src="./jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="./jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="./jspsych/dist/plugin-video-keyboard-response.js"></script>
+  <script src="./jspsych/dist/plugin-cb-video.js"></script>
+  <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
+  <link rel="stylesheet" href="./jspsych/dist/jspsych.css">
+</head>
+
+<body>
+</body>
+
+<script>
+  var jsPsych = initJsPsych({
+    override_safe_mode:true,
+    use_web_audio:true,
+    on_finish: function() {
+    jsPsych.data.displayData();
+  }
+  });
+
+  var start = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '',
+    choices: ['Hey Adi! Click here to start']
+  };
+
+  var trial = {
+    type: jsPsychVideoKeyboardResponse,
+    response_allowed_while_playing:true,
+    width:1000,
+    // stimulus: '<video id="0msec" ' +
+    //   'src="./0msec_001_summoned.mp4" ' +
+    //   'style="position:absolute;width:500px;" playsinline autoplay muted preload="auto">' +
+    //   '</video><video id="500msec" ' +
+    //   'src="./500msec_001_summoned.mp4" ' +
+    //   'style="position:absolute;width:500px;" playsinline autoplay muted preload="auto">'+
+    //   '</video><video id="1000msec" ' +
+    //   'src="./1000msec_001_summoned.mp4" ' +
+    //   'width=500px playsinline autoplay muted preload="auto"></video>',
+    stimulus:['./stimuli/0msec_001_summoned.mp4', './stimuli/500msec_001_summoned.mp4', './stimuli/1000msec_001_summoned.mp4'],
+    flicker_duration: 80,
+    flicker_frequency: 2000,
+    choices: ' ',
+    trial_ends_after_video:true,
+    response_ends_trial:false,
+  };
+
+  if (typeof jsPsych !== "undefined") {
+    jsPsych.run([start, trial]);
+  } else {
+    document.body.innerHTML = '<div style="text-align:center; margin-top:50%; transform:translate(0,-50%);">You must be online to view the demo.</div>';
+  }
+</script>
+
+</html>
