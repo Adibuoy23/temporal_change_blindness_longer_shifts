@@ -8,6 +8,7 @@
   <script src="./jspsych/dist/plugin-video-keyboard-response.js"></script>
   <script src="./jspsych/dist/plugin-cb-video.js"></script>
   <script src="./jspsych/dist/plugin-preload.js"></script>
+  <script src="./jspsych/dist/plugin-fullscreen.js"></script>
   <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
   <link rel="stylesheet" href="./jspsych/dist/jspsych.css">
 </head>
@@ -21,6 +22,7 @@
     use_web_audio:true,
     on_finish: function() {
     jsPsych.data.displayData();
+    document.body.style.cursor = 'default';
   }
   });
 
@@ -30,23 +32,75 @@
   /* preload images */
   var preload = {
     type: jsPsychPreload,
-    video: ['./stimuli/0msec_001_summoned.mp4', './stimuli/500msec_001_summoned.mp4', './stimuli/1000msec_001_summoned.mp4']
+    video: ['https://adibuoy23.github.io/temporal_change_blindness/stimuli/0msec_001_summoned.mp4',
+    'https://adibuoy23.github.io/temporal_change_blindness/stimuli/500msec_001_summoned.mp4',
+    'https://adibuoy23.github.io/temporal_change_blindness/stimuli/1000msec_001_summoned.mp4']
   };
   timeline.push(preload);
 
+  var fullscreen_start = {
+    type: jsPsychFullscreen,
+    fullscreen_mode: true
+  };
+  timeline.push(fullscreen_start);
+
+
   var start = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: '',
-    choices: ['Hey Adi! Click here to start']
+    stimulus: '<h3>Welcome to the experiment!</h3><p>Your goal in this experiment is to <b>detect temporal shifts in video.</b></p>',
+    choices: ['Next']
   };
 
   timeline.push(start);
 
+  var introduction = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p>You will be watching movie clips (1 min long) from the movie 1917." +
+               "<br> "+
+               "<br>1917 was released in 2019 - This movie is famous for its single long shot cinematography with no scene cuts." +
+               "<br> "+
+               "<br>This means that visually the movie watching experience should be smooth and continuous without any disruptions." +
+               "<br> "+
+               "<br>However, we have added some disruptions to the movie clips you are going to be watching today." +
+               "<br> "+
+               "<br>These disruptions are abrupt flickers in the video. You will find the <strong>screen to flicker periodically</strong> when watching these clips. </p>",
+    choices: ["Next"]
+  };
+  timeline.push(introduction);
+
+  var introduction2 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p>Occasionally during these screen flickers, the video clips jump forward / backward in time" +
+               "<br> "+
+               "<br>Your job is to detect the video jumps in time and report them" +
+               "<br> "+
+               "<br>You will report them by pressing the <strong>SPACE BAR</strong> immediately as soon as you noticed the jumps" +
+               "<br> "+
+               "<br>Try to be as quick as possible in reporting these jumps. </p>",
+    choices: ["Here's a demonstration"]
+  };
+  timeline.push(introduction2);
+
+  var fixation = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<div class="container-debug">' +
+              '<div style="font-size:60px;color:black;text-align:center;vertical-align:middle;line-height:375px;">+</div>' +
+              '</div>',
+    choices: 'NO_KEYS',
+    trial_duration: 1000,
+    on_start: function(trial) {
+      document.body.style.cursor = 'none';
+      }
+  }
+  timeline.push(fixation);
+
   var trial = {
-    type: jsPsychVideoKeyboardResponse,
+    type: jsPsychCbVideo,
     response_allowed_while_playing:true,
     width:1000,
-    stimulus:['./stimuli/0msec_001_summoned.mp4', './stimuli/500msec_001_summoned.mp4', './stimuli/1000msec_001_summoned.mp4'],
+    stimulus:['https://adibuoy23.github.io/temporal_change_blindness/stimuli/0msec_001_summoned.mp4',
+    'https://adibuoy23.github.io/temporal_change_blindness/stimuli/500msec_001_summoned.mp4',
+    'https://adibuoy23.github.io/temporal_change_blindness/stimuli/1000msec_001_summoned.mp4'],
     flicker_duration: 80,
     flicker_frequency: 2000,
     choices: ' ',
@@ -55,6 +109,13 @@
   };
 
   timeline.push(trial);
+
+  var fullscreen_trial_exit = {
+    type: jsPsychFullscreen,
+    fullscreen_mode: false,
+  };
+
+  timeline.push(fullscreen_trial_exit);
 
   if (typeof jsPsych !== "undefined") {
     jsPsych.run(timeline);

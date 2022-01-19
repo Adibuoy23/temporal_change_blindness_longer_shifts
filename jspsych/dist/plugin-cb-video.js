@@ -1,8 +1,8 @@
-var jsPsychVideoKeyboardResponse = (function (jspsych) {
+var jsPsychCbVideo = (function (jspsych) {
   'use strict';
 
   const info = {
-      name: "video-keyboard-response",
+      name: "change-blindness-video-response",
       parameters: {
           /** Array of the video file(s) to play. Video can be provided in multiple file formats for better cross-browser support. */
           stimulus: {
