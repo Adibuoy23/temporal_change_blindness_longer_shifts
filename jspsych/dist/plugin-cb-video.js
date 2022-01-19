@@ -130,6 +130,7 @@ var jsPsychVideoKeyboardResponse = (function (jspsych) {
       `);
           }
           // setup stimulus
+          var video_preload_blob = []
           var video_html = "<div>";
             for(let stim=0; stim < trial.stimulus.length; stim++){video_html += '<video id='+'"video_'+stim.toString()+'"'+'style="position:absolute;left:25%;bottom:25%;right:25%;top:25%"';
             if (trial.width) {
@@ -152,8 +153,8 @@ var jsPsychVideoKeyboardResponse = (function (jspsych) {
                 video_html += ' style="visibility: hidden;"';
             }
             video_html += ">";
-            var video_preload_blob = this.jsPsych.pluginAPI.getVideoBuffer(trial.stimulus[stim]);
-            if (!video_preload_blob) {
+            video_preload_blob.push(this.jsPsych.pluginAPI.getVideoBuffer(trial.stimulus[stim]));
+            if (!video_preload_blob[stim]) {
                 var file_name = trial.stimulus[stim];
                 if (file_name.indexOf("?") > -1) {
                     file_name = file_name.substring(0, file_name.indexOf("?"));
@@ -166,7 +167,6 @@ var jsPsychVideoKeyboardResponse = (function (jspsych) {
                 video_html += '<source src="' + file_name + '" type="video/' + type + '">';
             }
             video_html += "</video>";}
-
           if(trial.mask){
             video_html += '<img src="./stimuli/mask.png" id="mask" style="position:absolute;left:25%;bottom:25%;right:25%;top:25%"';
             if (trial.width) {
@@ -277,7 +277,7 @@ var jsPsychVideoKeyboardResponse = (function (jspsych) {
           for (let stim=0; stim < trial.stimulus.length; stim++){
             video_element.push(display_element.querySelector('#video_'+stim.toString()));
             if (video_preload_blob) {
-                video_element[stim].src = video_preload_blob;
+                video_element[stim].src = video_preload_blob[stim];
             }
             video_element[stim].playbackRate = trial.rate;
             video_element[stim].onended = onended
