@@ -187,50 +187,115 @@ var jsPsychCbVideo = (function (jspsych) {
           // Define the flickering scenario
           var timeoutID;
           var flickerTimeOut;
+          var missTimeOutID;
           if (timeoutID){
             clearTimeout(timeoutID);
-            timeoutID = 'null';
+            timeoutID = null;
           }
+
+
           function show_flicker(mask){
             mask.style.opacity=.75;
             var flicker_duration = trial.flicker_duration;
             flickerTimeOut = setTimeout(()=>{mask.style.opacity=0;},flicker_duration);
           }
+
+
+
           var counter = 0;
           var magnitude_jump = [0, 500, 1000];
           var direction = 'forward';
+          var jump = null;
+
+
           function change_video(magnitude_jump){
             if (counter % 4 ==3){
               counter += 1;
               if (direction == 'forward'){
-                var jump = magnitude_jump.pop();
-                console.log(jump);
+                change_time_point = performance.now();
+                jump = magnitude_jump.pop();
                 direction = 'reverse';
                 if (jump == 500){
                   console.log("Forward:500");
                   video_1.style.opacity = 1;
                   video_2.style.opacity = 0;
                   video_0.style.opacity = 0;
+
+                  // Add the change to trial_data
+                  change_data.ChangeDirection = 1;
+                  change_data.ChangeMagnitude = 500;
+                  change_data.ChangeCoded = 1;
                 }
                 else if(jump == 1000){
                   console.log("Forward:1000");
                   video_2.style.opacity = 1;
                   video_0.style.opacity = 0;
                   video_1.style.opacity = 0;
+
+                  // Add the change to trial data
+                  change_data.ChangeDirection=1;
+                  change_data.ChangeMagnitude=1000;
+                  change_data.ChangeCoded=2;
+                }
+                else if(jump == 0){
+                  console.log("Forward:0");
+                  video_0.style.opacity = 1;
+                  video_1.style.opacity = 0;
+                  video_2.style.opacity = 0;
+
+                  // Add the change to trial data
+                  change_data.ChangeDirection=1;
+                  change_data.ChangeMagnitude=0;
+                  change_data.ChangeCoded=0;
                 }
               }
               else{ // jump back to the original video
+                change_time_point = performance.now();
                 console.log("Reverse");
                 video_0.style.opacity = 1;
                 video_1.style.opacity = 0;
                 video_2.style.opacity = 0;
                 direction = 'forward';
+
+                // Add the change to the trial data
+                if (jump==500){
+                  change_data.ChangeDirection=0;
+                  change_data.ChangeMagnitude=500;
+                  change_data.ChangeCoded=-1;
+                }
+                else if(jump==1000){
+                  change_data.ChangeDirection=0;
+                  change_data.ChangeMagnitude=1000;
+                  change_data.ChangeCoded=-2;
+                }
+                else if(jump == 0){
+                  change_data.ChangeDirection=0;
+                  change_data.ChangeMagnitude=0;
+                  change_data.ChangeCoded=0;
+                }
               }
+
+              // Check if the response has been made within 2 seconds since the video has been changed
+              if (jump != null){
+                missTimeOutID = setTimeout(() => {
+                  console.log(response_time_point);
+                  if (response_time_point > change_time_point){
+                    change_data.Miss = 1;
+                    change_data.Detect = 0;
+                    change_data.FalseAlarm = null;
+                    rt = null;
+                  }
+                  console.log(change_data.Miss);
+                  update_response();
+                }, 2000);
+              }
+
 
 
             }
             else{
               counter += 1;
+              change_time_point = null;
             }
           }
 
@@ -249,6 +314,17 @@ var jsPsychCbVideo = (function (jspsych) {
           video_1.style.opacity = 0;
           video_2.style.opacity = 0;
 
+          var change_data = {
+            ChangeMagnitude: null,
+            ChangeDirection: null,
+            ChangeCoded: null,
+          }
+
+          // Create the change time point and response time variables
+          var change_time_point = 0;
+          var response_time_point = 0;
+          var rt;
+
           if (trial.flicker_duration != 'null' && trial.flicker_frequency != 'null'){
             flicker(mask);
           }
@@ -259,7 +335,9 @@ var jsPsychCbVideo = (function (jspsych) {
                   end_trial();
                   clearTimeout(timeoutID);
                   clearTimeout(flickerTimeOut);
-                  timeoutID = 'null';
+                  timeoutID = null;
+                  flickerTimeOut = null;
+                  missTimeOutID = null;
               }
               if (trial.response_allowed_while_playing == false && !trial.trial_ends_after_video) {
                   // start keyboard listener
@@ -327,7 +405,10 @@ var jsPsychCbVideo = (function (jspsych) {
                             end_trial();
                             clearTimeout(timeoutID);
                             clearTimeout(flickerTimeOut);
-                            timeoutID = 'null'
+                            clearTimeout(missTimeOutID);
+                            timeoutID = null;
+                            flickerTimeOut = null;
+                            missTimeOutID = null;
                         }
                     }
                 });
@@ -339,6 +420,12 @@ var jsPsychCbVideo = (function (jspsych) {
           var response = {
               rt: [],
               key: [],
+              Detect: [],
+              Miss: [],
+              FalseAlarm: [],
+              ChangeMagnitude: [],
+              ChangeDirection: [],
+              ChangeCoded: [],
           };
           // function to end trial when it is time
           const end_trial = () => {
@@ -359,7 +446,13 @@ var jsPsychCbVideo = (function (jspsych) {
               var trial_data = {
                   rt: JSON.stringify(response.rt),
                   stimulus: trial.stimulus,
-                  response: JSON.stringify(response.key),
+                  Detect: response.Detect,
+                  Miss: response.Miss,
+                  FalseAlarm: response.FalseAlarm,
+                  ChangeMagnitude: response.ChangeMagnitude,
+                  ChangeDirection: response.ChangeDirection,
+                  ChangeCoded: response.ChangeCoded,
+
               };
               // clear the display
               display_element.innerHTML = "";
@@ -367,6 +460,22 @@ var jsPsychCbVideo = (function (jspsych) {
               this.jsPsych.finishTrial(trial_data);
           };
           // function to handle responses by the subject
+          function update_response(){
+            // record all the responses
+            response.rt.push(rt);
+            response.Detect.push(change_data.Detect);
+            response.Miss.push(change_data.Miss);
+            response.FalseAlarm.push(change_data.FalseAlarm);
+            response.ChangeMagnitude.push(change_data.ChangeMagnitude);
+            response.ChangeDirection.push(change_data.ChangeDirection);
+            response.ChangeCoded.push(change_data.ChangeCoded);
+
+            change_time_point = null;
+            change_data.Detect = null;
+            change_data.Miss = null;
+            change_data.FalseAlarm = null;
+
+          }
           var after_response = (info) => {
               // after a valid response, the stimulus will have the CSS class 'responded'
               // which can be used to provide visual feedback that a response was recorded
@@ -374,11 +483,22 @@ var jsPsychCbVideo = (function (jspsych) {
                 display_element.querySelector('#video_'+stim.toString()).className +=
                     " responded";
               }
+              response_time_point = performance.now()
+              if(change_time_point && change_data.Miss !=1){
+                rt = response_time_point - change_time_point;
+                change_data.Detect = 1; // Accurate Detection
+                change_data.Miss = 0;
+                change_data.FalseAlarm = null;
+              }
+              else if (change_time_point==null){
+                rt = null;
+                change_data.Detect = null;
+                change_data.Miss = null;
+                change_data.FalseAlarm = 1; // False Alarm
+              }
+              update_response();
 
-              // record all the responses
-              console.log(info)
-              response.rt.push(info.rt);
-              response.key.push(info.key);
+
               if (trial.response_ends_trial) {
                   end_trial();
               }
