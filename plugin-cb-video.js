@@ -154,6 +154,7 @@ var jsPsychCbVideo = (function (jspsych) {
             }
             video_html += ">";
             video_preload_blob.push(this.jsPsych.pluginAPI.getVideoBuffer(trial.stimulus[stim]));
+            console.log(trial.stimulus[stim]);
             if (!video_preload_blob[stim]) {
                 var file_name = trial.stimulus[stim];
                 if (file_name.indexOf("?") > -1) {
@@ -223,7 +224,6 @@ var jsPsychCbVideo = (function (jspsych) {
                 jump = magnitude_jump.pop();
                 direction = 'reverse';
                 if (jump == 500){
-                  console.log("Forward:500");
                   video_1.style.opacity = 1;
                   video_2.style.opacity = 0;
                   video_0.style.opacity = 0;
@@ -234,7 +234,6 @@ var jsPsychCbVideo = (function (jspsych) {
                   change_data.ChangeCoded = 1;
                 }
                 else if(jump == 1000){
-                  console.log("Forward:1000");
                   video_2.style.opacity = 1;
                   video_0.style.opacity = 0;
                   video_1.style.opacity = 0;
@@ -245,7 +244,6 @@ var jsPsychCbVideo = (function (jspsych) {
                   change_data.ChangeCoded=2;
                 }
                 else if(jump == 0){
-                  console.log("Forward:0");
                   video_0.style.opacity = 1;
                   video_1.style.opacity = 0;
                   video_2.style.opacity = 0;
@@ -259,7 +257,6 @@ var jsPsychCbVideo = (function (jspsych) {
               else{ // jump back to the original video
                 change_time_point = performance.now();
                 responded = false;
-                console.log("Reverse");
                 video_0.style.opacity = 1;
                 video_1.style.opacity = 0;
                 video_2.style.opacity = 0;
@@ -292,7 +289,6 @@ var jsPsychCbVideo = (function (jspsych) {
                     change_data.FalseAlarm = null;
                     rt = null;
                     video_seeker_time = change_time_point - trialStartTime;
-                  console.log("Miss", change_data.Miss);
                   update_response();
                 }
                 }, 2000);
@@ -516,7 +512,6 @@ var jsPsychCbVideo = (function (jspsych) {
           };
           // start the response listener
           if (trial.choices != "NO_KEYS" && trial.response_allowed_while_playing) {
-            console.log(info)
               this.jsPsych.pluginAPI.getKeyboardResponse({
                   callback_function: after_response,
                   valid_responses: trial.choices,
