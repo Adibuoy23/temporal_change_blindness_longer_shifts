@@ -201,11 +201,17 @@ var jsPsychCbVideo = (function (jspsych) {
           }
 
 
-
+          // Create the change time point and response time variables
+          var change_time_point = 0;
+          var response_time_point = 0;
+          var rt;
+          var video_seeker_time;
+          var trialStartTime;
           var counter = 0;
           var magnitude_jump = [0, 500, 1000];
           var direction = 'forward';
           var jump = null;
+          var responded = false;
 
 
           function change_video(magnitude_jump){
@@ -213,6 +219,7 @@ var jsPsychCbVideo = (function (jspsych) {
               counter += 1;
               if (direction == 'forward'){
                 change_time_point = performance.now();
+                responded = false;
                 jump = magnitude_jump.pop();
                 direction = 'reverse';
                 if (jump == 500){
@@ -251,6 +258,7 @@ var jsPsychCbVideo = (function (jspsych) {
               }
               else{ // jump back to the original video
                 change_time_point = performance.now();
+                responded = false;
                 console.log("Reverse");
                 video_0.style.opacity = 1;
                 video_1.style.opacity = 0;
@@ -278,15 +286,15 @@ var jsPsychCbVideo = (function (jspsych) {
               // Check if the response has been made within 2 seconds since the video has been changed
               if (jump != null){
                 missTimeOutID = setTimeout(() => {
-                  console.log(response_time_point);
-                  if (response_time_point > change_time_point){
+                  if (!responded){
                     change_data.Miss = 1;
                     change_data.Detect = 0;
                     change_data.FalseAlarm = null;
                     rt = null;
-                  }
-                  console.log(change_data.Miss);
+                    video_seeker_time = performance.now() - trialStartTime - 2000;
+                  console.log("Miss", change_data.Miss);
                   update_response();
+                }
                 }, 2000);
               }
 
@@ -320,13 +328,10 @@ var jsPsychCbVideo = (function (jspsych) {
             ChangeCoded: null,
           }
 
-          // Create the change time point and response time variables
-          var change_time_point = 0;
-          var response_time_point = 0;
-          var rt;
 
           if (trial.flicker_duration != 'null' && trial.flicker_frequency != 'null'){
             flicker(mask);
+            trialStartTime = performance.now()
           }
 
           // Define the end of trial scenario
@@ -419,7 +424,7 @@ var jsPsychCbVideo = (function (jspsych) {
           // store response
           var response = {
               rt: [],
-              key: [],
+              video_seeker_time: [],
               Detect: [],
               Miss: [],
               FalseAlarm: [],
@@ -445,6 +450,7 @@ var jsPsychCbVideo = (function (jspsych) {
               // gather the data to store for the trial
               var trial_data = {
                   rt: JSON.stringify(response.rt),
+                  video_seeker_time: response.video_seeker_time,
                   stimulus: trial.stimulus,
                   Detect: response.Detect,
                   Miss: response.Miss,
@@ -463,6 +469,7 @@ var jsPsychCbVideo = (function (jspsych) {
           function update_response(){
             // record all the responses
             response.rt.push(rt);
+            response.video_seeker_time.push(video_seeker_time);
             response.Detect.push(change_data.Detect);
             response.Miss.push(change_data.Miss);
             response.FalseAlarm.push(change_data.FalseAlarm);
@@ -483,18 +490,22 @@ var jsPsychCbVideo = (function (jspsych) {
                 display_element.querySelector('#video_'+stim.toString()).className +=
                     " responded";
               }
+              responded = true;
               response_time_point = performance.now()
               if(change_time_point && change_data.Miss !=1){
                 rt = response_time_point - change_time_point;
                 change_data.Detect = 1; // Accurate Detection
                 change_data.Miss = 0;
                 change_data.FalseAlarm = null;
+                console.log(info);
+                video_seeker_time = info.rt;
               }
               else if (change_time_point==null){
                 rt = null;
                 change_data.Detect = null;
                 change_data.Miss = null;
                 change_data.FalseAlarm = 1; // False Alarm
+                video_seeker_time = info.rt;
               }
               update_response();
 
