@@ -80,9 +80,9 @@ video_two: "500msec_016_crossing_the_front_line.mp4",
 video_three: "1000msec_016_crossing_the_front_line.mp4"
 },
 {
-video_one:"0msec_017_the_injury.mp4",
-video_two: "500msec_017_the_injury.mp4",
-video_three: "1000msec_017_the_injury.mp4"
+video_one:"0msec_017_injury.mp4",
+video_two: "500msec_017_injury.mp4",
+video_three: "1000msec_017_injury.mp4"
 },
 {
 video_one:"0msec_018_look_for_cover.mp4",
