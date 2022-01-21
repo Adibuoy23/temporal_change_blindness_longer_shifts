@@ -142,10 +142,14 @@ var jsPsychCbVideo = (function (jspsych) {
       `);
           }
           document.body.style.cursor = 'none';
+          var video_style = ["position:relative;top:0;left:0;",
+          "position:absolute;top:0;left:0;",
+          "position:absolute;top:0;left:0;"];
           // setup stimulus
-          var video_preload_blob = []
-          var video_html = "<div>";
-            for(let stim=0; stim < trial.stimulus.length; stim++){video_html += '<video id='+'"video_'+stim.toString()+'"'+'style="position:absolute;left:25%;bottom:25%;right:25%;top:25%"';
+          var video_preload_blob = [];
+
+          var video_html = '<div style = "position:relative;top:0;left:0;">'
+            for(let stim=0; stim < trial.stimulus.length; stim++){video_html += '<video id='+'"video_'+stim.toString()+'"'+'style="'+video_style[stim]+'"';
             if (trial.width) {
                 video_html += ' width="' + trial.width + '"';
             }
@@ -181,7 +185,7 @@ var jsPsychCbVideo = (function (jspsych) {
             }
             video_html += "</video>";}
           if(trial.mask){
-            video_html += '<img src="./stimuli/mask.png" id="mask" style="position:absolute;left:25%;bottom:25%;right:25%;top:25%"';
+            video_html += '<img src="./stimuli/mask.png" id="mask" style="position:absolute;top:0;left:0;"';
             if (trial.width) {
                 video_html += ' width=' + trial.width + ';';
             }
@@ -190,11 +194,11 @@ var jsPsychCbVideo = (function (jspsych) {
             }
             video_html += ' >';
           }
+          video_html += '<div id="feedback" style="position:absolute;color:white;text-align:center;top:50%;left:50%;right:0">'+""+'</div>';
           video_html += "</div>";
           // add prompt if there is one
           if (trial.prompt !== null) {
-              video_html += '<div id="prompt" style="position:absolute;text-align:center;top:80%;left:0;right:0">'+trial.prompt+'</div>';
-              video_html += '<div id="feedback" style="position:relative;color:white;text-align:center;top:0;left:0;right:0">'+""+'</div>';
+              video_html += '<div id="prompt" style="position:relative;text-align:center;top:0;left:0;right:0">'+trial.prompt+'</div>';
           }
           display_element.innerHTML = video_html;
 
@@ -209,7 +213,7 @@ var jsPsychCbVideo = (function (jspsych) {
 
 
           function show_flicker(mask){
-            mask.style.opacity=.75;
+            mask.style.opacity=1;
             var flicker_duration = trial.flicker_duration;
             flickerTimeOut = setTimeout(()=>{mask.style.opacity=0;},flicker_duration);
           }
@@ -319,7 +323,7 @@ var jsPsychCbVideo = (function (jspsych) {
                     };
                   update_response();
                 }
-                }, 2000);
+              }, trial.flicker_frequency*3/2);
               }
 
 
@@ -528,17 +532,28 @@ var jsPsychCbVideo = (function (jspsych) {
               response_time_point = performance.now()
               if(change_time_point && change_data.Miss !=1){
                 if (trial.show_feedback){
-                  document.getElementById('feedback').innerHTML = "<strong>Good job!</strong>";
-                  promptTimeOutID = setTimeout(() => {
-                    document.getElementById('feedback').innerHTML = '';
-                  }, trial.feedback_duration);
+                  if(jump !=0){
+                    document.getElementById('feedback').innerHTML = "<strong>Good job!</strong>";
+                    promptTimeOutID = setTimeout(() => {
+                      document.getElementById('feedback').innerHTML = '';
+                    }, trial.feedback_duration);
+
+                  } else {
+                    document.getElementById('feedback').innerHTML = "<strong>Nope!</strong>";
+                    promptTimeOutID = setTimeout(() => {
+                      document.getElementById('feedback').innerHTML = '';
+                    }, trial.feedback_duration);
+                  }
                 }
 
                 rt = (response_time_point - change_time_point).toFixed(2);
-                change_data.Detect = 1; // Accurate Detection
-                change_data.Miss = 0;
-                change_data.FalseAlarm = null;
-                video_seeker_time = (change_time_point - trialStartTime).toFixed(2);
+                if (rt < trial.flicker_frequency * 3/2){
+                  change_data.Detect = 1; // Accurate Detection
+                  change_data.Miss = 0;
+                  change_data.FalseAlarm = null;
+                  video_seeker_time = (change_time_point - trialStartTime).toFixed(2);
+                }
+
               }
               else if (change_time_point==null){
                 if (trial.show_feedback){

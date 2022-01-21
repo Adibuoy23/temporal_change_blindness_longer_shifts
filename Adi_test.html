@@ -152,6 +152,7 @@
     conditional_function: function(){
       //get the data from the previous trial
       // and check which button was pressed
+      console.log(jsPsych.data.get().last(1).values()[0]);
       var data = jsPsych.data.get().last(1).values()[0];
       if (data.response ==0){
         return true;
@@ -161,7 +162,7 @@
     }
   }
   timeline.push({
-    timeline: [revisit_demo, if_revisit_demo],
+    timeline: [revisit_demo, if_revisit_demo, if_revisit_demo],
   });
 
 
@@ -186,11 +187,11 @@
     response_allowed_while_playing:true,
     width:1000,
     stimulus:[jsPsych.timelineVariable('video_one'), jsPsych.timelineVariable('video_two'), jsPsych.timelineVariable('video_three')],
-    flicker_duration: 80,
+    flicker_duration: 150,
     flicker_frequency: 2000,
     choices: ' ',
     trial_ends_after_video:true,
-    prompt: "Press SPACEBAR when you see the video jump in time.",
+    prompt: " ",
     response_ends_trial:false,
     show_feedback:false
   };
