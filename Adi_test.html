@@ -30,18 +30,27 @@
   /* create timeline */
   var timeline = [];
 
+  var test_stimuli = stimuli.slice(0,1);
+  console.log(test_stimuli);
+  stimuli = stimuli.slice(1,stimuli.length);
+  console.log(stimuli);
+
+ var test_videos = [
+   test_stimuli.map(a => a.video_one),
+   test_stimuli.map(a => a.video_two),
+   test_stimuli.map(a => a.video_three)
+ ]
+
   var videos = [
     stimuli.map(a => a.video_one),
     stimuli.map(a => a.video_two),
     stimuli.map(a => a.video_three)
   ]
 
-  console.log(videos);
-
   /* preload images */
   var preload = {
     type: jsPsychPreload,
-    video: videos,
+    video: test_videos,
   };
   timeline.push(preload);
 
@@ -62,13 +71,13 @@
 
   var introduction = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p>You will be watching movie clips (1 min long) from the movie 1917." +
+    stimulus: "<p>You will be watching movie clips without audio (1 min long) from the movie 1917." +
                "<br> "+
                "<br>1917 was released in 2019 - This movie is famous for its single long shot cinematography with no scene cuts." +
                "<br> "+
                "<br>This means that visually the movie watching experience should be smooth and continuous without any disruptions." +
                "<br> "+
-               "<br>However, we have added some disruptions to the movie clips you are going to be watching today." +
+               "<br>However, for the purposes of this study, we have added some disruptions to the movie clips you are going to be watching today." +
                "<br> "+
                "<br>These disruptions are abrupt flickers in the video. You will find the <strong>screen to flicker periodically</strong> when watching these clips. </p>",
     choices: ["Next"]
@@ -84,9 +93,24 @@
                "<br>You will report them by pressing the <strong>SPACE BAR</strong> immediately as soon as you noticed the jumps" +
                "<br> "+
                "<br>Try to be as quick as possible in reporting these jumps. </p>",
-    choices: ["Here's a demonstration"]
+    choices: ["Next"]
   };
   timeline.push(introduction2);
+
+
+  var introduction3 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p> Get ready. Here we go... <br> <strong>For Science!</strong> </p>",
+    choices: ["Whatever dude! I need credits ¯\\_(ツ)_/¯", "Let's do it! ╰(´︶`)╯"]
+  };
+  timeline.push(introduction3);
+
+  var introduction4 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p> </p>",
+    choices: ["Here is a demonstration"]
+  };
+  timeline.push(introduction4);
 
   var fixation = {
     type: jsPsychHtmlKeyboardResponse,
@@ -99,7 +123,63 @@
       document.body.style.cursor = 'none';
       }
   }
-  timeline.push(fixation);
+
+  var demo_trial = {
+    type: jsPsychCbVideo,
+    response_allowed_while_playing:true,
+    width:1000,
+    stimulus:[jsPsych.timelineVariable('video_one'), jsPsych.timelineVariable('video_two'), jsPsych.timelineVariable('video_three')],
+    flicker_duration: 80,
+    flicker_frequency: 2000,
+    choices: ' ',
+    trial_ends_after_video:true,
+    prompt: "Press SPACEBAR when you see the video jump in time.",
+    response_ends_trial:false,
+    show_feedback:true
+  };
+
+  timeline.push({
+    timeline: [fixation, demo_trial],
+    timeline_variables: test_stimuli
+              });
+
+  var revisit_demo = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p> Do you want to try the demo again?/p>",
+    choices: ["Yes", "No"],
+  };
+
+  var if_revisit_demo = {
+    timeline : [fixation, demo_trial, revisit_demo],
+    conditional_function: function(){
+      //get the data from the previous trial
+      // and check which button was pressed
+      var data = jsPsych.data.get().last(1).values()[0];
+      if (data.response ==0){
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+  timeline.push([revisit_demo, if_revisit_demo]);
+
+
+  /* preload images */
+  var preload2 = {
+    type: jsPsychPreload,
+    video: videos,
+    message: "Downloading the rest of the experiment. This will use about 400 MB of data"
+  };
+  timeline.push(preload2);
+
+  var no_feedback_notification = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p> The rest of the experiment will not have any feedback </p>",
+    choices: ["Understood"],
+  };
+  timeline.push(no_feedback_notification);
+
 
   var trial = {
     type: jsPsychCbVideo,
@@ -110,7 +190,9 @@
     flicker_frequency: 2000,
     choices: ' ',
     trial_ends_after_video:true,
+    prompt: "Press SPACEBAR when you see the video jump in time.",
     response_ends_trial:false,
+    show_feedback:false
   };
 
   timeline.push({

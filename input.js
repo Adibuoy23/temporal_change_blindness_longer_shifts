@@ -1,14 +1,9 @@
 var src = 'https://adibuoy23.github.io/temporal_change_blindness/stimuli/';
 var stimuli = [
 {
-video_one: src+"0msec_047_blake_is_dead.mp4",
-video_two: src+"500msec_047_blake_is_dead.mp4",
-video_three: src+"1000msec_047_blake_is_dead.mp4"
-},
-{
-video_one: src+"0msec_048_the_photograph.mp4",
-video_two: src+"500msec_048_the_photograph.mp4",
-video_three: src+"1000msec_048_the_photograph.mp4"
+video_one: src+"0msec_041_pilot_shot_down_and_rescued.mp4",
+video_two: src+"500msec_041_pilot_shot_down_and_rescued.mp4",
+video_three: src+"1000msec_041_pilot_shot_down_and_rescued.mp4"
 },
 {
 video_one: src+"0msec_001_summoned.mp4",
@@ -159,6 +154,11 @@ video_three: src+"1000msec_032_they_have_destroyed_their_own_guns.mp4"
 video_one: src+"0msec_033_fighter_planes_wonder_what_They_say.mp4",
 video_two: src+"500msec_033_fighter_planes_wonder_what_They_say.mp4",
 video_three: src+"1000msec_033_fighter_planes_wonder_what_They_say.mp4"
+},
+{
+video_one: src+"0msec_036_cherry_trees_chopped.mp4",
+video_two: src+"500msec_036_cherry_trees_chopped.mp4",
+video_three: src+"1000msec_036_cherry_trees_chopped.mp4"
 },
 {
 video_one: src+"0msec_037_the_abandoned_house.mp4",

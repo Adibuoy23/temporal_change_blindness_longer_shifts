@@ -41,6 +41,18 @@ var jsPsychCbVideo = (function (jspsych) {
               pretty_name: "Autoplay",
               default: true,
           },
+          /** If true, the video will begin playing as soon as it has loaded. */
+          show_feedback: {
+              type: jspsych.ParameterType.BOOL,
+              pretty_name: "Feedback",
+              default: true,
+          },
+          /** How long should the flicker duration be. */
+          feedback_duration: {
+              type: jspsych.ParameterType.INT,
+              pretty_name: "Feedback Duration",
+              default: 300,
+          },
           /** If true, the subject will be able to pause the video or move the playback to any point in the video. */
           controls: {
               type: jspsych.ParameterType.BOOL,
@@ -56,13 +68,13 @@ var jsPsychCbVideo = (function (jspsych) {
           /** How long should the flicker duration be. */
           flicker_duration: {
               type: jspsych.ParameterType.INT,
-              pretty_name: "Flicker duration",
+              pretty_name: "Flicker Duration",
               default: null,
           },
           /** How frequently should the flicker happen. */
           flicker_frequency: {
               type: jspsych.ParameterType.INT,
-              pretty_name: "Flicker frequency",
+              pretty_name: "Flicker Frequency",
               default: null,
           },
           /** Time to start the clip. If null (default), video will start at the beginning of the file. */
@@ -154,7 +166,6 @@ var jsPsychCbVideo = (function (jspsych) {
             }
             video_html += ">";
             video_preload_blob.push(this.jsPsych.pluginAPI.getVideoBuffer(trial.stimulus[stim]));
-            console.log(trial.stimulus[stim]);
             if (!video_preload_blob[stim]) {
                 var file_name = trial.stimulus[stim];
                 if (file_name.indexOf("?") > -1) {
@@ -181,7 +192,8 @@ var jsPsychCbVideo = (function (jspsych) {
           video_html += "</div>";
           // add prompt if there is one
           if (trial.prompt !== null) {
-              video_html += trial.prompt;
+              video_html += '<div id="prompt" style="position:absolute;text-align:center;top:80%;left:0;right:0">'+trial.prompt+'</div>';
+              video_html += '<div id="feedback" style="position:relative;color:white;text-align:center;top:0;left:0;right:0">'+""+'</div>';
           }
           display_element.innerHTML = video_html;
 
@@ -204,6 +216,7 @@ var jsPsychCbVideo = (function (jspsych) {
 
           // Create the change time point and response time variables
           var change_time_point = 0;
+          var which_video = 1;
           var response_time_point = 0;
           var rt;
           var video_seeker_time;
@@ -213,17 +226,20 @@ var jsPsychCbVideo = (function (jspsych) {
           var direction = 'forward';
           var jump = null;
           var responded = false;
+          var promptTimeOutID;
 
 
           function change_video(magnitude_jump){
             if (counter % 4 ==3){
               counter += 1;
               if (direction == 'forward'){
+                document.getElementById('feedback').innerHTML = '';
                 change_time_point = performance.now();
                 responded = false;
                 jump = magnitude_jump.pop();
                 direction = 'reverse';
                 if (jump == 500){
+                  which_video = 2;
                   video_1.style.opacity = 1;
                   video_2.style.opacity = 0;
                   video_0.style.opacity = 0;
@@ -234,6 +250,7 @@ var jsPsychCbVideo = (function (jspsych) {
                   change_data.ChangeCoded = 1;
                 }
                 else if(jump == 1000){
+                  which_video = 3;
                   video_2.style.opacity = 1;
                   video_0.style.opacity = 0;
                   video_1.style.opacity = 0;
@@ -244,6 +261,7 @@ var jsPsychCbVideo = (function (jspsych) {
                   change_data.ChangeCoded=2;
                 }
                 else if(jump == 0){
+                  which_video = 1;
                   video_0.style.opacity = 1;
                   video_1.style.opacity = 0;
                   video_2.style.opacity = 0;
@@ -256,6 +274,8 @@ var jsPsychCbVideo = (function (jspsych) {
               }
               else{ // jump back to the original video
                 change_time_point = performance.now();
+                document.getElementById('feedback').innerHTML = '';
+                which_video = 1;
                 responded = false;
                 video_0.style.opacity = 1;
                 video_1.style.opacity = 0;
@@ -288,7 +308,14 @@ var jsPsychCbVideo = (function (jspsych) {
                     change_data.Detect = 0;
                     change_data.FalseAlarm = null;
                     rt = null;
-                    video_seeker_time = change_time_point - trialStartTime;
+                    video_seeker_time = (change_time_point - trialStartTime).toFixed(2);
+                    if (trial.show_feedback){
+                      document.getElementById('feedback').innerHTML = "<strong>Missed it!</strong>";
+                      promptTimeOutID = setTimeout(() => {
+                        console.log("entering")
+                        document.getElementById('feedback').innerHTML = '';
+                      }, trial.feedback_duration);
+                    };
                   update_response();
                 }
                 }, 2000);
@@ -336,9 +363,11 @@ var jsPsychCbVideo = (function (jspsych) {
                   end_trial();
                   clearTimeout(timeoutID);
                   clearTimeout(flickerTimeOut);
+                  clearTimeout(promptTimeOutID);
                   timeoutID = null;
                   flickerTimeOut = null;
                   missTimeOutID = null;
+                  promptTimeOutID = null;
               }
               if (trial.response_allowed_while_playing == false && !trial.trial_ends_after_video) {
                   // start keyboard listener
@@ -353,6 +382,7 @@ var jsPsychCbVideo = (function (jspsych) {
           };
 
           var video_element = []
+          var stim_in_trial = trial.stimulus[0].replace(/^.*[\\\/]/, '');
           for (let stim=0; stim < trial.stimulus.length; stim++){
             video_element.push(display_element.querySelector('#video_'+stim.toString()));
             if (video_preload_blob) {
@@ -407,9 +437,11 @@ var jsPsychCbVideo = (function (jspsych) {
                             clearTimeout(timeoutID);
                             clearTimeout(flickerTimeOut);
                             clearTimeout(missTimeOutID);
+                            clearTimeout(promptTimeOutID);
                             timeoutID = null;
                             flickerTimeOut = null;
                             missTimeOutID = null;
+                            promptTimeOutID = null;
                         }
                     }
                 });
@@ -421,6 +453,8 @@ var jsPsychCbVideo = (function (jspsych) {
           var response = {
               rt: [],
               video_seeker_time: [],
+              which_video : [],
+              stim_in_trial: [],
               Detect: [],
               Miss: [],
               FalseAlarm: [],
@@ -446,8 +480,9 @@ var jsPsychCbVideo = (function (jspsych) {
               // gather the data to store for the trial
               var trial_data = {
                   rt: JSON.stringify(response.rt),
-                  video_seeker_time: response.video_seeker_time,
-                  stimulus: trial.stimulus,
+                  videoSeekerTime: JSON.stringify(response.video_seeker_time),
+                  whichVideo : response.which_video,
+                  stimInTrial : response.stim_in_trial,
                   Detect: response.Detect,
                   Miss: response.Miss,
                   FalseAlarm: response.FalseAlarm,
@@ -465,7 +500,9 @@ var jsPsychCbVideo = (function (jspsych) {
           function update_response(){
             // record all the responses
             response.rt.push(rt);
+            response.which_video.push(which_video);
             response.video_seeker_time.push(video_seeker_time);
+            response.stim_in_trial.push(stim_in_trial);
             response.Detect.push(change_data.Detect);
             response.Miss.push(change_data.Miss);
             response.FalseAlarm.push(change_data.FalseAlarm);
@@ -489,19 +526,32 @@ var jsPsychCbVideo = (function (jspsych) {
               responded = true;
               response_time_point = performance.now()
               if(change_time_point && change_data.Miss !=1){
-                rt = response_time_point - change_time_point;
+                if (trial.show_feedback){
+                  document.getElementById('feedback').innerHTML = "<strong>Good job!</strong>";
+                  promptTimeOutID = setTimeout(() => {
+                    document.getElementById('feedback').innerHTML = '';
+                  }, trial.feedback_duration);
+                }
+
+                rt = (response_time_point - change_time_point).toFixed(2);
                 change_data.Detect = 1; // Accurate Detection
                 change_data.Miss = 0;
                 change_data.FalseAlarm = null;
-                console.log(info);
-                video_seeker_time = change_time_point - trialStartTime;
+                video_seeker_time = (change_time_point - trialStartTime).toFixed(2);
               }
               else if (change_time_point==null){
+                if (trial.show_feedback){
+                  document.getElementById('feedback').innerHTML = "<strong>Nope!</strong>";
+                  promptTimeOutID = setTimeout(() => {
+                    document.getElementById('feedback').innerHTML = '';
+                  }, trial.feedback_duration);
+                }
+
                 rt = null;
                 change_data.Detect = null;
                 change_data.Miss = null;
                 change_data.FalseAlarm = 1; // False Alarm
-                video_seeker_time = info.rt; // Approximate time when false alarm was made
+                video_seeker_time = info.rt.toFixed(2); // Approximate time when false alarm was made
               }
               update_response();
 
