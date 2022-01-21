@@ -3,7 +3,7 @@
 
 <head>
   <script src="./jspsych/dist/jspsych.js"></script>
-  <script src="./jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="./plugin-html-button-response.js"></script>
   <script src="./jspsych/dist/plugin-html-keyboard-response.js"></script>
   <script src="./jspsych/dist/plugin-video-keyboard-response.js"></script>
   <script src="./plugin-cb-video.js"></script>
@@ -31,9 +31,7 @@
   var timeline = [];
 
   var test_stimuli = stimuli.slice(0,1);
-  console.log(test_stimuli);
   stimuli = stimuli.slice(1,stimuli.length);
-  console.log(stimuli);
 
  var test_videos = [
    test_stimuli.map(a => a.video_one),
@@ -100,15 +98,15 @@
 
   var introduction3 = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p> Get ready. Here we go... <br> <strong>For Science!</strong> </p>",
-    choices: ["Whatever dude! I need credits ¯\\_(ツ)_/¯", "Let's do it! ╰(´︶`)╯"]
+    stimulus: "<p> Get ready... Here we go!!! <br> <strong>For Science!</strong> </p>",
+    choices: ["Whatever dude! I need credits", "Let's do it!"]
   };
   timeline.push(introduction3);
 
   var introduction4 = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p> </p>",
-    choices: ["Here is a demonstration"]
+    stimulus: "<p> LOL;JK!!! Seriously though, this should take not more than 30 minutes of your time</p>",
+    choices: ["Okay, now show me a demo trial"]
   };
   timeline.push(introduction4);
 
@@ -128,14 +126,14 @@
     type: jsPsychCbVideo,
     response_allowed_while_playing:true,
     width:1000,
-    stimulus:[jsPsych.timelineVariable('video_one'), jsPsych.timelineVariable('video_two'), jsPsych.timelineVariable('video_three')],
+    stimulus:[test_stimuli[0].video_one, test_stimuli[0].video_two, test_stimuli[0].video_three],
     flicker_duration: 80,
     flicker_frequency: 2000,
     choices: ' ',
     trial_ends_after_video:true,
     prompt: "Press SPACEBAR when you see the video jump in time.",
     response_ends_trial:false,
-    show_feedback:true
+    show_feedback:true,
   };
 
   timeline.push({
@@ -145,8 +143,8 @@
 
   var revisit_demo = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p> Do you want to try the demo again?/p>",
-    choices: ["Yes", "No"],
+    stimulus: "<p> Do you want to try the demo again to understand the experiment?</p>",
+    choices: ["Yes", "No, I think I got it"],
   };
 
   var if_revisit_demo = {
@@ -162,20 +160,22 @@
       }
     }
   }
-  timeline.push([revisit_demo, if_revisit_demo]);
+  timeline.push({
+    timeline: [revisit_demo, if_revisit_demo],
+  });
 
 
   /* preload images */
   var preload2 = {
     type: jsPsychPreload,
     video: videos,
-    message: "Downloading the rest of the experiment. This will use about 400 MB of data"
+    message: "Downloading the rest of the experiment. This will use about 400 MB of data",
   };
   timeline.push(preload2);
 
   var no_feedback_notification = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p> The rest of the experiment will not have any feedback </p>",
+    stimulus: "<p> Unlike the demo the rest of the experiment will not have any feedback </p>",
     choices: ["Understood"],
   };
   timeline.push(no_feedback_notification);

@@ -141,6 +141,7 @@ var jsPsychCbVideo = (function (jspsych) {
         of files. See https://www.jspsych.org/latest/plugins/video-keyboard-response/#parameters
       `);
           }
+          document.body.style.cursor = 'none';
           // setup stimulus
           var video_preload_blob = []
           var video_html = "<div>";
@@ -223,6 +224,7 @@ var jsPsychCbVideo = (function (jspsych) {
           var trialStartTime;
           var counter = 0;
           var magnitude_jump = [0, 500, 1000];
+          magnitude_jump = jsPsych.randomization.repeat(magnitude_jump, 1);
           var direction = 'forward';
           var jump = null;
           var responded = false;
@@ -309,10 +311,9 @@ var jsPsychCbVideo = (function (jspsych) {
                     change_data.FalseAlarm = null;
                     rt = null;
                     video_seeker_time = (change_time_point - trialStartTime).toFixed(2);
-                    if (trial.show_feedback){
+                    if (trial.show_feedback && jump !=0){
                       document.getElementById('feedback').innerHTML = "<strong>Missed it!</strong>";
                       promptTimeOutID = setTimeout(() => {
-                        console.log("entering")
                         document.getElementById('feedback').innerHTML = '';
                       }, trial.feedback_duration);
                     };
