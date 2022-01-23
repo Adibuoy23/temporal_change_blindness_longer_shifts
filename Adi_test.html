@@ -134,6 +134,8 @@
     prompt: "Press SPACEBAR when you see the video jump in time.",
     response_ends_trial:false,
     show_feedback:true,
+    magnitude: test_stimuli[0].magnitude,
+    timepoints: test_stimuli[0].timepoints,
   };
 
   timeline.push({
@@ -193,7 +195,9 @@
     trial_ends_after_video:true,
     prompt: " ",
     response_ends_trial:false,
-    show_feedback:false
+    show_feedback:false,
+    magnitude: jsPsych.timelineVariable('magnitude'),
+    timepoints: jsPsych.timelineVariable('timepoints'),
   };
 
   timeline.push({

@@ -119,6 +119,20 @@ var jsPsychCbVideo = (function (jspsych) {
               pretty_name: "Response allowed while playing",
               default: true,
           },
+          /** Array of the magnitude jumps in video*/
+          magnitude: {
+              type: jspsych.ParameterType.VIDEO,
+              pretty_name: "Magnitude jumps in video",
+              default: undefined,
+              array: true,
+          },
+          /** Array of the time points where the jump happens*/
+          timepoints: {
+              type: jspsych.ParameterType.VIDEO,
+              pretty_name: "Time points for video jumps",
+              default: undefined,
+              array: true,
+          },
       },
   };
   /**
@@ -227,16 +241,19 @@ var jsPsychCbVideo = (function (jspsych) {
           var video_seeker_time;
           var trialStartTime;
           var counter = 0;
-          var magnitude_jump = [0, 500, 1000];
-          magnitude_jump = jsPsych.randomization.repeat(magnitude_jump, 1);
+          var magnitude_jump = trial.magnitude;
           var direction = 'forward';
           var jump = null;
           var responded = false;
           var promptTimeOutID;
-
+          var timepoints = trial.timepoints;
+          var curr_time_point = timepoints.shift();
+          console.log(curr_time_point);
 
           function change_video(magnitude_jump){
-            if (counter % 4 ==3){
+            if (counter ==curr_time_point){
+              curr_time_point = timepoints.shift();
+              console.log(curr_time_point);
               counter += 1;
               if (direction == 'forward'){
                 document.getElementById('feedback').innerHTML = '';
