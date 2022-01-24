@@ -18,7 +18,7 @@
 </body>
 
 <script>
-  var jsPsych = initJsPsych({
+var jsPsych = initJsPsych({
     on_finish: function(data){
     window.location.assign("https://ucdavis.sona-systems.com/webstudy_credit.aspx?experiment_id=2814&credit_token=ec0ffa50d82946bbb1b0f84d7f8db001&survey_code="+sona_id);
     document.body.style.cursor = 'default';
@@ -80,16 +80,16 @@
                "<br> "+
                "<br>This means that visually the movie watching experience should be smooth and continuous without any disruptions." +
                "<br> "+
-               "<br>However, for the purposes of this study, we have added some disruptions to the movie clips you are going to be watching today." +
+               "<br>However, for the purpose of this study, we have added some disruptions to the movie clips you are going to be watching today." +
                "<br> "+
-               "<br>These disruptions are abrupt flickers in the video. You will find the <strong>screen to flicker periodically</strong> when watching these clips. </p>",
+               "<br>These disruptions are abrupt flickers in the video. You will find the <strong>screen to flicker consistently at repeated intervals</strong> when watching these clips. </p>",
     choices: ["Next"]
   };
   timeline.push(introduction);
 
   var introduction2 = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p>Occasionally during these screen flickers, the video clips jump forward / backward in time" +
+    stimulus: "<p>Occasionally during these screen flickers, the video jumps forward / backward in time" +
                "<br> "+
                "<br>Your job is to detect the video jumps in time and report them" +
                "<br> "+
@@ -101,16 +101,13 @@
   timeline.push(introduction2);
 
 
-  var introduction3 = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: "<p> Get ready... Here we go!!! <br> <strong>For Science!</strong> </p>",
-    choices: ["Whatever dude! I need credits", "Let's do it!"]
-  };
-  timeline.push(introduction3);
-
   var introduction4 = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p> LOL;JK!!! Seriously though, this should take not more than 30 minutes of your time</p>",
+    stimulus: "<p> This experiment should take not more than 30 minutes of your time."+
+    "<br>" +
+    "<br> We have prepared demo trial to show you what we mean."+
+    "<br>"+
+    "<br> The demo trial will have feedback so that you can get a good understanding of the experiment.</p>",
     choices: ["Okay, now show me a demo trial"]
   };
   timeline.push(introduction4);
@@ -213,6 +210,14 @@
     timeline: [fixation, trial],
     timeline_variables: stimuli
               });
+
+  var end_note = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p><b>THE END.<br>" +
+    "Thank you for participating. If you have any questions, please reach out to saupadhy@ucdavis.edu.</b></p>",
+    choices: ["Got it"],
+  }
+  timeline.push(end_note);
 
   var fullscreen_trial_exit = {
     type: jsPsychFullscreen,

@@ -247,6 +247,7 @@ var jsPsychCbVideo = (function (jspsych) {
 
           // Create the change time point and response time variables
           var change_time_point = 0;
+          var change_time_point_buffer;
           var which_video = 1;
           var response_time_point = 0;
           var rt;
@@ -265,11 +266,12 @@ var jsPsychCbVideo = (function (jspsych) {
           function change_video(magnitude_jump){
             if (counter ==curr_time_point){
               curr_time_point = timepoints.shift();
-              console.log(curr_time_point);
               counter += 1;
               if (direction == 'forward'){
                 document.getElementById('feedback').innerHTML = '';
                 change_time_point = performance.now();
+                change_time_point_buffer = change_time_point;
+                console.log(change_time_point);
                 responded = false;
                 jump = magnitude_jump.pop();
                 direction = 'reverse';
@@ -309,6 +311,7 @@ var jsPsychCbVideo = (function (jspsych) {
               }
               else{ // jump back to the original video
                 change_time_point = performance.now();
+                change_time_point_buffer = change_time_point;
                 document.getElementById('feedback').innerHTML = '';
                 which_video = 1;
                 responded = false;
@@ -343,7 +346,8 @@ var jsPsychCbVideo = (function (jspsych) {
                     change_data.Detect = 0;
                     change_data.FalseAlarm = null;
                     rt = null;
-                    video_seeker_time = (change_time_point - trialStartTime).toFixed(2);
+                    video_seeker_time = (change_time_point_buffer - trialStartTime).toFixed(2);
+                    console.log(video_seeker_time, change_time_point_buffer, trialStartTime);
                     if (trial.show_feedback && jump !=0){
                       document.getElementById('feedback').innerHTML = "<strong>Missed it!</strong>";
                       promptTimeOutID = setTimeout(() => {
@@ -486,7 +490,7 @@ var jsPsychCbVideo = (function (jspsych) {
           // store response
           var response = {
               practice: [],
-              participant_id: [],
+              participant_id: participant_id,
               rt: [],
               video_seeker_time: [],
               which_video : [],
@@ -537,6 +541,7 @@ var jsPsychCbVideo = (function (jspsych) {
           // function to handle responses by the subject
           function update_response(){
             // record all the responses
+            response.practice.push(trial.practice);
             response.rt.push(rt);
             response.which_video.push(which_video);
             response.video_seeker_time.push(video_seeker_time);
