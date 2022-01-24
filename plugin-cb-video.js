@@ -133,8 +133,20 @@ var jsPsychCbVideo = (function (jspsych) {
               default: undefined,
               array: true,
           },
+          /** Whether a practice trial*/
+          practice: {
+              type: jspsych.ParameterType.BOOL,
+              pretty_name: "Practice Trial",
+              default: false,
       },
-  };
+          /** participant id */
+          participant_id: {
+              type: jspsych.ParameterType.INT,
+              pretty_name: "Participant ID",
+              default: undefined,
+      },
+  }
+};
   /**
    * **video-keyboard-response**
    *
@@ -199,7 +211,7 @@ var jsPsychCbVideo = (function (jspsych) {
             }
             video_html += "</video>";}
           if(trial.mask){
-            video_html += '<img src="./stimuli/mask.png" id="mask" style="position:absolute;top:0;left:0;"';
+            video_html += '<img src="https://adibuoy23.github.io/temporal_change_blindness/stimuli/mask.png" id="mask" style="position:absolute;top:0;left:0;"';
             if (trial.width) {
                 video_html += ' width=' + trial.width + ';';
             }
@@ -473,6 +485,8 @@ var jsPsychCbVideo = (function (jspsych) {
 
           // store response
           var response = {
+              practice: [],
+              participant_id: [],
               rt: [],
               video_seeker_time: [],
               which_video : [],
@@ -501,16 +515,18 @@ var jsPsychCbVideo = (function (jspsych) {
 
               // gather the data to store for the trial
               var trial_data = {
+                  practice: JSON.stringify(response.practice),
+                  participant_id: JSON.stringify(response.participant_id),
                   rt: JSON.stringify(response.rt),
                   videoSeekerTime: JSON.stringify(response.video_seeker_time),
-                  whichVideo : response.which_video,
-                  stimInTrial : response.stim_in_trial,
-                  Detect: response.Detect,
-                  Miss: response.Miss,
-                  FalseAlarm: response.FalseAlarm,
-                  ChangeMagnitude: response.ChangeMagnitude,
-                  ChangeDirection: response.ChangeDirection,
-                  ChangeCoded: response.ChangeCoded,
+                  whichVideo : JSON.stringify(response.which_video),
+                  stimInTrial : JSON.stringify(response.stim_in_trial),
+                  Detect: JSON.stringify(response.Detect),
+                  Miss: JSON.stringify(response.Miss),
+                  FalseAlarm: JSON.stringify(response.FalseAlarm),
+                  ChangeMagnitude: JSON.stringify(response.ChangeMagnitude),
+                  ChangeDirection: JSON.stringify(response.ChangeDirection),
+                  ChangeCoded: JSON.stringify(response.ChangeCoded),
 
               };
               // clear the display

@@ -19,16 +19,21 @@
 
 <script>
   var jsPsych = initJsPsych({
-    override_safe_mode:true,
-    use_web_audio:true,
-    on_finish: function() {
-    jsPsych.data.displayData();
+    on_finish: function(data){
+    window.location.assign("https://ucdavis.sona-systems.com/webstudy_credit.aspx?experiment_id=2814&credit_token=ec0ffa50d82946bbb1b0f84d7f8db001&survey_code="+sona_id);
     document.body.style.cursor = 'default';
   }
   });
 
   /* create timeline */
   var timeline = [];
+  let sona_id = jsPsych.data.urlVariables()['sona_id']
+  var participant_id;
+  if (sona_id){
+    participant_id = sona_id
+  } else{
+    participant_id = 0000
+  }
 
   var test_stimuli = stimuli.slice(0,1);
   stimuli = stimuli.slice(1,stimuli.length);
@@ -136,6 +141,8 @@
     show_feedback:true,
     magnitude: test_stimuli[0].magnitude,
     timepoints: test_stimuli[0].timepoints,
+    practice: true,
+    participant_id: participant_id,
   };
 
   timeline.push({
@@ -198,6 +205,8 @@
     show_feedback:false,
     magnitude: jsPsych.timelineVariable('magnitude'),
     timepoints: jsPsych.timelineVariable('timepoints'),
+    practice: false,
+    participant_id: participant_id,
   };
 
   timeline.push({
