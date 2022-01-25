@@ -356,7 +356,7 @@ var jsPsychCbVideo = (function (jspsych) {
                     };
                   update_response();
                 }
-              }, trial.flicker_frequency*3/2);
+              }, trial.flicker_frequency*0.75);
               }
 
 

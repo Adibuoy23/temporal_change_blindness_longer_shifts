@@ -56,12 +56,14 @@ var jsPsych = initJsPsych({
   var preload = {
     type: jsPsychPreload,
     video: test_videos,
+    data:{participant_id:participant_id},
   };
   timeline.push(preload);
 
   var fullscreen_start = {
     type: jsPsychFullscreen,
-    fullscreen_mode: true
+    fullscreen_mode: true,
+    data:{participant_id:participant_id},
   };
   timeline.push(fullscreen_start);
 
@@ -69,7 +71,8 @@ var jsPsych = initJsPsych({
   var start = {
     type: jsPsychHtmlButtonResponse,
     stimulus: '<h3>Welcome to the experiment!</h3><p>Your goal in this experiment is to <b>detect temporal shifts in video.</b></p>',
-    choices: ['Next']
+    choices: ['Next'],
+    data:{participant_id:participant_id},
   };
 
   timeline.push(start);
@@ -85,7 +88,8 @@ var jsPsych = initJsPsych({
                "<br>However, for the purpose of this study, we have added some disruptions to the movie clips you are going to be watching today." +
                "<br> "+
                "<br>These disruptions are abrupt flickers in the video. You will find the <strong>screen to flicker consistently at repeated intervals</strong> when watching these clips. </p>",
-    choices: ["Next"]
+    choices: ["Next"],
+    data:{participant_id:participant_id},
   };
   timeline.push(introduction);
 
@@ -98,7 +102,8 @@ var jsPsych = initJsPsych({
                "<br>You will report them by pressing the <strong>SPACE BAR</strong> immediately as soon as you noticed the jumps" +
                "<br> "+
                "<br>Try to be as quick as possible in reporting these jumps. </p>",
-    choices: ["Next"]
+    choices: ["Next"],
+    data:{participant_id:participant_id},
   };
   timeline.push(introduction2);
 
@@ -110,7 +115,8 @@ var jsPsych = initJsPsych({
     "<br> We have prepared demo trial to show you what we mean."+
     "<br>"+
     "<br> The demo trial will have feedback so that you can get a good understanding of the experiment.</p>",
-    choices: ["Okay, now show me a demo trial"]
+    choices: ["Okay, now show me a demo trial"],
+    data:{participant_id:participant_id},
   };
   timeline.push(introduction4);
 
@@ -121,6 +127,7 @@ var jsPsych = initJsPsych({
               '</div>',
     choices: 'NO_KEYS',
     trial_duration: 1000,
+    data:{participant_id:participant_id},
     on_start: function(trial) {
       document.body.style.cursor = 'none';
       }
@@ -153,10 +160,12 @@ var jsPsych = initJsPsych({
     type: jsPsychHtmlButtonResponse,
     stimulus: "<p> Do you want to try the demo again to understand the experiment?</p>",
     choices: ["Yes", "No, I think I got it"],
+    data:{participant_id:participant_id},
   };
 
   var if_revisit_demo = {
     timeline : [fixation, demo_trial, revisit_demo],
+    data:{participant_id:participant_id},
     conditional_function: function(){
       //get the data from the previous trial
       // and check which button was pressed
@@ -179,6 +188,7 @@ var jsPsych = initJsPsych({
     type: jsPsychPreload,
     video: videos,
     message: "Preloading the rest of the experiment. This might take a while.",
+    data:{participant_id:participant_id},
   };
   timeline.push(preload2);
 
@@ -186,6 +196,7 @@ var jsPsych = initJsPsych({
     type: jsPsychHtmlButtonResponse,
     stimulus: "<p> Unlike the demo the rest of the experiment will not have any feedback </p>",
     choices: ["Understood"],
+    data:{participant_id:participant_id},
   };
   timeline.push(no_feedback_notification);
 
@@ -223,6 +234,7 @@ var jsPsych = initJsPsych({
     "<br>"+
     "<br> If you have any questions, please reach out to saupadhy@ucdavis.edu.</p>",
     choices: ["Got it"],
+    data:{participant_id:participant_id},
   }
   timeline.push(end_note);
 
@@ -235,6 +247,7 @@ var jsPsych = initJsPsych({
         {prompt: "The instructions and demonstration could have been better", name: 'Instructions', labels: scale, required: true},
         {prompt: "The video jumps were hard to notice", name: 'Video jumps', labels: scale, required: true}
       ],
+      data:{participant_id:participant_id},
   };
 
   timeline.push(likert_trial);
@@ -243,7 +256,8 @@ var jsPsych = initJsPsych({
     type: jsPsychTextSurvey,
     questions: [
       {prompt: 'Other comments', placeholder: 'Type N/A if none', rows:10, columns: 50}
-    ]
+    ],
+    data:{participant_id:participant_id},
   };
 
   timeline.push(survey_page);
@@ -251,6 +265,7 @@ var jsPsych = initJsPsych({
   var fullscreen_trial_exit = {
     type: jsPsychFullscreen,
     fullscreen_mode: false,
+    data:{participant_id:participant_id},
   };
 
   timeline.push(fullscreen_trial_exit);
