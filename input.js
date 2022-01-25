@@ -4,7 +4,7 @@ var stimuli = [
 video_one: src+"0msec_041_pilot_shot_down_and_rescued.mp4",
 video_two: src+"500msec_041_pilot_shot_down_and_rescued.mp4",
 video_three: src+"1000msec_041_pilot_shot_down_and_rescued.mp4",
-magnitude: [1000, 0, 1000],
+magnitude: [0, 500, 1000],
 timepoints: [3, 5, 8, 12, 15, 19, 21],
 },
 {
