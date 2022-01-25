@@ -9,6 +9,8 @@
   <script src="./plugin-cb-video.js"></script>
   <script src="./jspsych/dist/plugin-preload.js"></script>
   <script src="./jspsych/dist/plugin-fullscreen.js"></script>
+  <script src="./plugin-likert-survey.js"></script>
+  <script src="./plugin-text-survey.js"></script>
   <script src="./input.js"></script>
   <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
   <link rel="stylesheet" href="./jspsych/dist/jspsych.css">
@@ -218,6 +220,28 @@ var jsPsych = initJsPsych({
     choices: ["Got it"],
   }
   timeline.push(end_note);
+
+  var scale = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
+
+  var likert_trial = {
+      type: jsPsychLikertSurvey,
+      questions: [
+        {prompt: "There were no issues with the video loading", name: 'Video loading', labels: scale, required: true},
+        {prompt: "The instructions and demonstration could have been better", name: 'Instructions', labels: scale, required: true},
+        {prompt: "The video jumps were hard to notice", name: 'Video jumps', labels: scale, required: true}
+      ],
+  };
+
+  timeline.push(likert_trial);
+
+  var survey_page = {
+    type: jsPsychTextSurvey,
+    questions: [
+      {prompt: 'Other comments', placeholder: 'Type N/A if none', rows:10, columns: 50}
+    ]
+  };
+
+  timeline.push(survey_page);
 
   var fullscreen_trial_exit = {
     type: jsPsychFullscreen,
