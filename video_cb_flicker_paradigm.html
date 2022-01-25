@@ -213,10 +213,15 @@ var jsPsych = initJsPsych({
     timeline_variables: stimuli
               });
 
+
   var end_note = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: "<p><b>THE END.<br>" +
-    "Thank you for participating. If you have any questions, please reach out to saupadhy@ucdavis.edu.</b></p>",
+    stimulus: "<p>THE END.<br>" +
+    "Thank you for participating. The experiment is done. <strong> Do not close yet. </strong>"+
+    "<br>"+
+    "<br> Please answer a few questions before exiting. Following this, you will be <strong> redirected to the SONA page </strong> to get your credits."+
+    "<br>"+
+    "<br> If you have any questions, please reach out to saupadhy@ucdavis.edu.</p>",
     choices: ["Got it"],
   }
   timeline.push(end_note);
