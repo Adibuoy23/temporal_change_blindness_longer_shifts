@@ -1,10 +1,10 @@
 var src = 'https://adibuoy23.github.io/temporal_change_blindness/stimuli/';
 var stimuli = [
 {
-video_one: src+"0msec_demo.mp4",
-video_two: src+"1000msec_demo.mp4",
-video_three: src+"2000msec_demo.mp4",
-magnitude: [0, 500, 1000],
+video_one: src+"0msec_041_pilot_shot_down_and_rescued.mp4",
+video_two: src+"500msec_041_pilot_shot_down_and_rescued.mp4",
+video_three: src+"1000msec_041_pilot_shot_down_and_rescued.mp4",
+magnitude: [1000, 1000, 1000],
 timepoints: [3, 5, 8, 12, 15, 19, 21],
 },
 {
