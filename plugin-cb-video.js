@@ -211,7 +211,7 @@ var jsPsychCbVideo = (function (jspsych) {
             }
             video_html += "</video>";}
           if(trial.mask){
-            video_html += '<img src="https://adibuoy23.github.io/temporal_change_blindness/stimuli/mask.png" id="mask" style="position:absolute;top:0;left:0;"';
+            video_html += '<img src="https://adibuoy23.github.io/temporal_change_blindness_longer_shifts/stimuli/mask.png" id="mask" style="position:absolute;top:0;left:0;"';
             if (trial.width) {
                 video_html += ' width=' + trial.width + ';';
             }
