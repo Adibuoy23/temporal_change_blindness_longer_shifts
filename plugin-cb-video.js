@@ -275,7 +275,7 @@ var jsPsychCbVideo = (function (jspsych) {
                 responded = false;
                 jump = magnitude_jump.pop();
                 direction = 'reverse';
-                if (jump == 500){
+                if (jump == 1000){
                   which_video = 2;
                   video_1.style.opacity = 1;
                   video_2.style.opacity = 0;
@@ -283,10 +283,10 @@ var jsPsychCbVideo = (function (jspsych) {
 
                   // Add the change to trial_data
                   change_data.ChangeDirection = 1;
-                  change_data.ChangeMagnitude = 500;
+                  change_data.ChangeMagnitude = 1000;
                   change_data.ChangeCoded = 1;
                 }
-                else if(jump == 1000){
+                else if(jump == 2000){
                   which_video = 3;
                   video_2.style.opacity = 1;
                   video_0.style.opacity = 0;
@@ -294,7 +294,7 @@ var jsPsychCbVideo = (function (jspsych) {
 
                   // Add the change to trial data
                   change_data.ChangeDirection=1;
-                  change_data.ChangeMagnitude=1000;
+                  change_data.ChangeMagnitude=2000;
                   change_data.ChangeCoded=2;
                 }
                 else if(jump == 0){
@@ -321,14 +321,14 @@ var jsPsychCbVideo = (function (jspsych) {
                 direction = 'forward';
 
                 // Add the change to the trial data
-                if (jump==500){
-                  change_data.ChangeDirection=0;
-                  change_data.ChangeMagnitude=500;
-                  change_data.ChangeCoded=-1;
-                }
-                else if(jump==1000){
+                if (jump==1000){
                   change_data.ChangeDirection=0;
                   change_data.ChangeMagnitude=1000;
+                  change_data.ChangeCoded=-1;
+                }
+                else if(jump==2000){
+                  change_data.ChangeDirection=0;
+                  change_data.ChangeMagnitude=2000;
                   change_data.ChangeCoded=-2;
                 }
                 else if(jump == 0){
@@ -663,7 +663,7 @@ var jsPsychCbVideo = (function (jspsych) {
       create_simulation_data(trial, simulation_options) {
           const default_data = {
               stimulus: trial.stimulus,
-              rt: this.jsPsych.randomization.sampleExGaussian(500, 50, 1 / 150, true),
+              rt: this.jsPsych.randomization.sampleExGaussian(1000, 50, 1 / 150, true),
               response: this.jsPsych.pluginAPI.getValidKey(trial.choices),
           };
           const data = this.jsPsych.pluginAPI.mergeSimulationData(default_data, simulation_options);
